@@ -1,43 +1,37 @@
 pipeline {
-  agent {
-    docker {
-      image 'python:3.11-slim'
-}
-}
-  stages {
+    agent any
 
-    stage('set up python environment') {
-      steps {
-        sh '''
-        cd message
-        python -m venv venv
-        . venv/bin/activate
-        pip install --upgrade pip
-        pip install -r requirements.txt
-        '''
-}
-}
-    stage("build the docker image") {
-      steps {
-        sh '''
-        cd message
-        docker build -t message_me .
-        '''
-}
-}
-    stage('run tests') {
-      steps {
-        sh '''
-        cd message
-        . venv/bin/activate
-        pytest --html=report.html --self-contained-html
-        '''
-}
-}
-}
-  post {
-    always {
-      archiveArtifacts artifacts: 'message/report.html', fingerprint: true
-}
-}
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('message') {
+                    sh '''
+                    docker build -t messaging-app .
+                    '''
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                dir('message') {
+                    sh '''
+                    docker run --rm messaging-app pytest --html=report.html --self-contained-html
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'message/report.html', fingerprint: true
+        }
+    }
 }
