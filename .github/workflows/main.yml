@@ -37,11 +37,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd message
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Wait for MySQL
         run: |
+          cd message
           sudo apt-get install -y mysql-client
           until mysqladmin ping -h 127.0.0.1 -u test_user -ptest_password --silent; do
             echo "Waiting for MySQL..."
@@ -56,6 +58,7 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
         run: |
+          cd message
           python manage.py migrate
 
       - name: Run tests
@@ -66,4 +69,5 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
         run: |
+          cd message
           python manage.py test
