@@ -1,0 +1,38 @@
+pipeline {
+  agent any
+  stages {
+    stage('checkout code'){
+      steps {
+        git branch: 'main',
+          credentialsId: 'magana15',
+          url: 'https://github.com/magana15/shop.git'
+}
+}
+
+    stage('set up python environment') {
+      steps {
+        sh '''
+        cd message
+        python3 -m venv venv
+        . venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        '''
+}
+}
+    stage('run tests') {
+      steps {
+        sh '''
+        cd message
+        . venv/bin/activate
+        pytest --html=report.html --self-contained-html
+        '''
+}
+}
+}
+  post {
+    always {
+      archiveArtifacts artifacts: 'report.html', fingerprint: true
+}
+}
+}
