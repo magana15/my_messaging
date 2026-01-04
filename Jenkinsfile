@@ -20,6 +20,7 @@ pipeline {
     stage("build the docker image") {
       steps {
         sh '''
+        cd message
         docker build -t message_me .
         '''
 }
