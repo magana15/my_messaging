@@ -17,6 +17,13 @@ pipeline {
         '''
 }
 }
+    stage("build the docker image") {
+      steps {
+        sh '''
+        docker build -t message_me .
+        '''
+}
+}
     stage('run tests') {
       steps {
         sh '''
