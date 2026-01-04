@@ -5,19 +5,12 @@ pipeline {
 }
 }
   stages {
-    stage('checkout code'){
-      steps {
-        git branch: 'main',
-          credentialsId: 'magana15',
-          url: 'https://github.com/magana15/shop.git'
-}
-}
 
     stage('set up python environment') {
       steps {
         sh '''
         cd message
-        python3 -m venv venv
+        python -m venv venv
         . venv/bin/activate
         pip install --upgrade pip
         pip install -r requirements.txt
@@ -36,7 +29,7 @@ pipeline {
 }
   post {
     always {
-      archiveArtifacts artifacts: 'report.html', fingerprint: true
+      archiveArtifacts artifacts: 'message/report.html', fingerprint: true
 }
 }
 }
